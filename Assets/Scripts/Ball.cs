@@ -13,7 +13,7 @@ public class Ball : MonoBehaviour {
     private BallState _ballState;
     private CircleCollider2D _ballCollider;
     private float _radius;
-    private Collider2D _lastOverlapedCollider;
+    private Collider2D _lastOverlapCollider;
 
     void Start() {
         _ballState = BallState.Static;
@@ -25,17 +25,22 @@ public class Ball : MonoBehaviour {
         if (_ballState == BallState.Static) return;
 
         transform.Translate(_directionOfMovement * _speedOfMovement * Time.deltaTime);
+
+        _speedOfMovement -= Table.Instance.Friction * Time.deltaTime;
+
+        if (_speedOfMovement <= 0)
+            _ballState = BallState.Static;
     }
 
     void FixedUpdate() {
         if (_ballState == BallState.Static) return;
 
         Collider2D overlapCollider = Physics2D.OverlapCircle(transform.position, _radius);
-        Debug.DrawLine(transform.position, transform.position + (Vector3)_directionOfMovement * _radius, Color.red);
         if (overlapCollider)
-            if (!_lastOverlapedCollider || _lastOverlapedCollider != overlapCollider)
+            if (!_lastOverlapCollider || _lastOverlapCollider != overlapCollider)
                 ReflectionCalculation(overlapCollider);
-        _lastOverlapedCollider = overlapCollider;
+
+        _lastOverlapCollider = overlapCollider;
     }
 
     private void ReflectionCalculation(Collider2D collider) {
@@ -47,6 +52,8 @@ public class Ball : MonoBehaviour {
             if (Physics2D.OverlapCircle((Vector2)transform.position + _directionOfMovement, _radius * 0.95f)) {
                 _directionOfMovement = new Vector2(-_directionOfMovement.x, -_directionOfMovement.y);
             }
+
+            return;
         }
 
         Ball otherBall = collider.GetComponent<Ball>();
@@ -55,12 +62,9 @@ public class Ball : MonoBehaviour {
         }
     }
 
-    [ContextMenu("Setup")]
-    public void Setup(/*float speedOfMovement, Vector2 directionOfMovement*/) {
-        // _speedOfMovement = speedOfMovement;
-        // _directionOfMovement = directionOfMovement.normalized;
-        _speedOfMovement = 3f;
-        _directionOfMovement = new Vector2(-0.5f, 1f).normalized;
+    public void Setup(float speedOfMovement, Vector2 directionOfMovement) {
+        _speedOfMovement = speedOfMovement;
+        _directionOfMovement = directionOfMovement.normalized;
         _ballState = BallState.Dynamic;
         _ballCollider.enabled = false;
     }

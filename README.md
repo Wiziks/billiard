@@ -1,6 +1,5 @@
 # **BILLIARD**
 
-A game for the iOS or Android mobile platform
 Create a few game mechanics of the billiard game.
 
 **This application should have features:**

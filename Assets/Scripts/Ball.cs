@@ -11,26 +11,31 @@ public class Ball : MonoBehaviour {
     private Vector2 _directionOfMovement;
     private float _speedOfMovement;
     private BallState _ballState;
-    private Collider2D _ballCollider;
+    private CircleCollider2D _ballCollider;
+    private float _radius;
+    private Collider2D _lastOverlapedCollider;
 
     void Start() {
         _ballState = BallState.Static;
-        _ballCollider = GetComponent<Collider2D>();
+        _ballCollider = GetComponent<CircleCollider2D>();
+        _radius = transform.localScale.x * _ballCollider.radius;
     }
 
     private void Update() {
         if (_ballState == BallState.Static) return;
 
-
+        transform.Translate(_directionOfMovement * _speedOfMovement * Time.deltaTime);
     }
 
     void FixedUpdate() {
         if (_ballState == BallState.Static) return;
 
-        transform.Translate(_directionOfMovement * _speedOfMovement * Time.fixedDeltaTime);
-        Collider2D overlapCollider = Physics2D.OverlapCircle(transform.position, 0.3625f);
+        Collider2D overlapCollider = Physics2D.OverlapCircle(transform.position, _radius);
+        Debug.DrawLine(transform.position, transform.position + (Vector3)_directionOfMovement * _radius, Color.red);
         if (overlapCollider)
-            ReflectionCalculation(overlapCollider);
+            if (!_lastOverlapedCollider || _lastOverlapedCollider != overlapCollider)
+                ReflectionCalculation(overlapCollider);
+        _lastOverlapedCollider = overlapCollider;
     }
 
     private void ReflectionCalculation(Collider2D collider) {
@@ -38,10 +43,10 @@ public class Ball : MonoBehaviour {
         if (table) {
             _speedOfMovement *= table.Bounce;
 
-
-            _directionOfMovement = new Vector2(_directionOfMovement.y, -_directionOfMovement.x);
-            Debug.Log(_speedOfMovement);
-            return;
+            _directionOfMovement = new Vector2(_directionOfMovement.x, -_directionOfMovement.y);
+            if (Physics2D.OverlapCircle((Vector2)transform.position + _directionOfMovement, _radius * 0.95f)) {
+                _directionOfMovement = new Vector2(-_directionOfMovement.x, -_directionOfMovement.y);
+            }
         }
 
         Ball otherBall = collider.GetComponent<Ball>();
@@ -55,7 +60,7 @@ public class Ball : MonoBehaviour {
         // _speedOfMovement = speedOfMovement;
         // _directionOfMovement = directionOfMovement.normalized;
         _speedOfMovement = 3f;
-        _directionOfMovement = new Vector2(0.5f, 1f).normalized;
+        _directionOfMovement = new Vector2(-0.5f, 1f).normalized;
         _ballState = BallState.Dynamic;
         _ballCollider.enabled = false;
     }

@@ -27,21 +27,26 @@ public class Ball : MonoBehaviour {
 
         transform.Translate(_directionOfMovement * _speedOfMovement * Time.deltaTime);
 
-        _speedOfMovement -= Table.Instance.Friction * Time.deltaTime;
+        _speedOfMovement -= Table.Instance.Friction * Time.deltaTime * 9.81f;
 
-        if (_speedOfMovement <= 0)
+        if (_speedOfMovement <= 0) {
             _ballState = BallState.Static;
+        }
     }
 
     void FixedUpdate() {
         if (_ballState == BallState.Static) return;
 
-        Collider2D overlapCollider = Physics2D.OverlapCircle(transform.position, _radius);
-        if (overlapCollider)
-            if (!_lastOverlapCollider || _lastOverlapCollider != overlapCollider)
-                ReflectionCalculation(overlapCollider);
+        Collider2D[] allColliders = Physics2D.OverlapCircleAll(transform.position, _radius);
+        foreach (Collider2D overlapCollider in allColliders) {
+            if (overlapCollider != _ballCollider) {
+                if (!_lastOverlapCollider || _lastOverlapCollider != overlapCollider)
+                    ReflectionCalculation(overlapCollider);
 
-        _lastOverlapCollider = overlapCollider;
+                _lastOverlapCollider = overlapCollider;
+            }
+        }
+
     }
 
     private void ReflectionCalculation(Collider2D collider) {
@@ -59,7 +64,18 @@ public class Ball : MonoBehaviour {
 
         Ball otherBall = collider.GetComponent<Ball>();
         if (otherBall) {
+            Vector2 otherBallDirection = otherBall.transform.position - transform.position;
+            otherBall.Setup(_speedOfMovement, otherBallDirection);
 
+            Vector2 pastDirection = _directionOfMovement;
+            _directionOfMovement = new Vector2(_directionOfMovement.y, -_directionOfMovement.x);
+            if (Physics2D.OverlapCircle((Vector2)transform.position + _directionOfMovement, _radius * 0.95f)) {
+                _directionOfMovement = new Vector2(-_directionOfMovement.y, -_directionOfMovement.x);
+            }
+
+            Debug.Log(Vector2.Angle(_directionOfMovement, otherBallDirection));
+            //float speedKoeficient = 1f - 90f / Vector2.Angle(pastDirection, _directionOfMovement) * 180f / Mathf.PI;
+            //_speedOfMovement *= speedKoeficient;
         }
     }
 
@@ -67,8 +83,8 @@ public class Ball : MonoBehaviour {
         _speedOfMovement = speedOfMovement;
         _directionOfMovement = directionOfMovement.normalized;
         _ballState = BallState.Dynamic;
-        _ballCollider.enabled = false;
     }
 
     public float Radius { get => _radius; }
+    internal BallState BallState { get => _ballState; }
 }

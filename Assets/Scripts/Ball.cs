@@ -15,6 +15,7 @@ public class Ball : MonoBehaviour {
     private float _radius;
     private Collider2D _lastOverlapCollider;
 
+
     void Start() {
         _ballState = BallState.Static;
         _ballCollider = GetComponent<CircleCollider2D>();
@@ -68,4 +69,6 @@ public class Ball : MonoBehaviour {
         _ballState = BallState.Dynamic;
         _ballCollider.enabled = false;
     }
+
+    public float Radius { get => _radius; }
 }

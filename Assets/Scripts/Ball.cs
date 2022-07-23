@@ -25,7 +25,6 @@ public class Ball : MonoBehaviour {
     private void Update() {
         if (_ballState == BallState.Static) return;
 
-        transform.Translate(_directionOfMovement * _speedOfMovement * Time.deltaTime);
 
         _speedOfMovement -= Table.Instance.Friction * Time.deltaTime * 9.81f;
 
@@ -36,6 +35,8 @@ public class Ball : MonoBehaviour {
 
     void FixedUpdate() {
         if (_ballState == BallState.Static) return;
+
+        transform.Translate(_directionOfMovement * _speedOfMovement * Time.fixedDeltaTime);
 
         Collider2D[] allColliders = Physics2D.OverlapCircleAll(transform.position, _radius);
         foreach (Collider2D overlapCollider in allColliders) {
@@ -55,7 +56,7 @@ public class Ball : MonoBehaviour {
             _speedOfMovement *= table.Bounce;
 
             _directionOfMovement = new Vector2(_directionOfMovement.x, -_directionOfMovement.y);
-            if (Physics2D.OverlapCircle((Vector2)transform.position + _directionOfMovement, _radius * 0.95f)) {
+            if (Physics2D.OverlapCircle((Vector2)transform.position + _directionOfMovement, _radius * 0.99f)) {
                 _directionOfMovement = new Vector2(-_directionOfMovement.x, -_directionOfMovement.y);
             }
 
@@ -65,17 +66,17 @@ public class Ball : MonoBehaviour {
         Ball otherBall = collider.GetComponent<Ball>();
         if (otherBall) {
             Vector2 otherBallDirection = otherBall.transform.position - transform.position;
-            otherBall.Setup(_speedOfMovement, otherBallDirection);
 
-            Vector2 pastDirection = _directionOfMovement;
-            _directionOfMovement = new Vector2(_directionOfMovement.y, -_directionOfMovement.x);
-            if (Physics2D.OverlapCircle((Vector2)transform.position + _directionOfMovement, _radius * 0.95f)) {
-                _directionOfMovement = new Vector2(-_directionOfMovement.y, -_directionOfMovement.x);
+            float speedKoeficient = Vector2.Angle(_directionOfMovement, otherBallDirection) / 90f;
+            Debug.Log(speedKoeficient);
+            otherBall.Setup(_speedOfMovement * (1f - speedKoeficient), otherBallDirection);
+            _speedOfMovement *= speedKoeficient;
+
+            _directionOfMovement = new Vector2(otherBallDirection.y, -otherBallDirection.x);
+            if (Physics2D.OverlapCircle((Vector2)transform.position + _directionOfMovement, _radius * 0.99f)) {
+                _directionOfMovement = new Vector2(-otherBallDirection.y, -otherBallDirection.x);
             }
 
-            Debug.Log(Vector2.Angle(_directionOfMovement, otherBallDirection));
-            //float speedKoeficient = 1f - 90f / Vector2.Angle(pastDirection, _directionOfMovement) * 180f / Mathf.PI;
-            //_speedOfMovement *= speedKoeficient;
         }
     }
 

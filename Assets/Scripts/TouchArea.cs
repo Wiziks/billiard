@@ -33,7 +33,7 @@ public class TouchArea : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 
         _cue.WhiteBall.Setup(_cue.ImpactForce, _cue.transform.up);
         _cue.gameObject.SetActive(false);
-        _trajectoryRenderer.gameObject.SetActive(false);
+        //_trajectoryRenderer.gameObject.SetActive(false);
     }
 
     private void SetupCue() {

@@ -14,25 +14,39 @@ public class TrajectoryRenderer : MonoBehaviour {
     public void ShowTrajectory(Vector2 origin, Vector2 direction, Quaternion cueAngle, float ballRadius) {
         _collisionPosition.gameObject.SetActive(true);
 
+        Vector2 offset = new Vector2(direction.y, -direction.x);
         RaycastHit2D hit = Physics2D.Raycast(origin + direction * ballRadius * 1.01f, direction, 50f);
-        if (hit && hit.collider.tag != _ballTagName) {
-            Vector2 offset = new Vector2(direction.y, -direction.x);
-            hit = Physics2D.Raycast(origin + offset * ballRadius + direction * 0.01f, direction, 50f);
-            if (hit && hit.collider.tag != _ballTagName) {
-                hit = Physics2D.Raycast(origin - offset * ballRadius + direction * 0.01f, direction, 50f);
-                if (hit && hit.collider.tag != _ballTagName) {
-                    _selection.gameObject.SetActive(false);
-                    _lineToBall.gameObject.SetActive(false);
-                    _bounceLine.gameObject.SetActive(false);
+        RaycastHit2D hitLeft = Physics2D.Raycast(origin + offset * ballRadius + direction * 0.01f, direction, 50f);
+        RaycastHit2D hitRight = Physics2D.Raycast(origin - offset * ballRadius + direction * 0.01f, direction, 50f);
 
-                    hit = Physics2D.Raycast(origin + direction * ballRadius * 1.01f, direction, 50f);
-                    DrawCollision(hit, origin, direction, cueAngle, ballRadius);
-                    return;
-                }
+        if (hit && hit.collider.tag == _ballTagName) {
+            if (hitLeft && hitLeft.collider.tag == _ballTagName) {
+                if (hit.distance > hitLeft.distance) hit = hitLeft;
             }
+        } else {
+            if (hitLeft && hitLeft.collider.tag == _ballTagName) hit = hitLeft;
+        }
+
+        if (hit && hit.collider.tag == _ballTagName) {
+            if (hitRight && hitRight.collider.tag == _ballTagName) {
+                if (hit.distance > hitRight.distance) hit = hitRight;
+            }
+        } else {
+            if (hitRight && hitRight.collider.tag == _ballTagName) hit = hitRight;
         }
 
         if (!hit) return;
+
+        if (hit.collider.tag != _ballTagName) {
+            _selection.gameObject.SetActive(false);
+            _lineToBall.gameObject.SetActive(false);
+            _bounceLine.gameObject.SetActive(false);
+
+            hit = Physics2D.Raycast(origin + direction * ballRadius * 1.01f, direction, 50f);
+            DrawCollision(hit, origin, direction, cueAngle, ballRadius);
+
+            return;
+        }
 
         DrawCollision(hit, origin, direction, cueAngle, ballRadius);
 

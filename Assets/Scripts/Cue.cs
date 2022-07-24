@@ -1,10 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Cue : MonoBehaviour {
-    [SerializeField] private TrajectoryRenderer _trajectoryRenderer;
+    [Header("")]
     [SerializeField] private float _maxImpactForce;
+
+    [Header("")]
+    [SerializeField] private TrajectoryRenderer _trajectoryRenderer;
+
+    [Header("")]
     [SerializeField] private Ball _whiteBall;
 
     public void Hit(float fraction) {

@@ -1,11 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Table : MonoBehaviour {
+    [Header("Physics Parameters")]
     [Range(0.01f, 1f)][SerializeField] private float _bounce;
     [SerializeField] private float _friction;
+
+    [Header("Billiard Cue")]
     [SerializeField] private Cue _cue;
+
     public static Table Instance;
 
     void Start() {
@@ -18,7 +20,7 @@ public class Table : MonoBehaviour {
             Destroy(other.gameObject);
         else {
             _cue.WhiteBall.Setup(0f, Vector2.zero);
-            other.transform.position = Vector2.zero;
+            _cue.WhiteBall.transform.position = Vector2.zero;
         }
     }
 

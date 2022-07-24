@@ -1,12 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 
 public class GameManager : MonoBehaviour {
     [SerializeField] private TextMeshProUGUI _scoreText;
+
     private int _numberOfBalls;
+
     void Start() {
         _numberOfBalls = FindObjectsOfType<Ball>().Length - 1;
     }
@@ -17,7 +17,9 @@ public class GameManager : MonoBehaviour {
 
     public void UpdateBallNumber() {
         _numberOfBalls--;
+
         _scoreText.text = $"Left: {_numberOfBalls}";
+
         if (_numberOfBalls == 0) ReloadScene();
     }
 

@@ -1,13 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TrajectoryRenderer : MonoBehaviour {
+    [Header("Trajectory Elements")]
     [SerializeField] private Transform _line;
     [SerializeField] private Transform _lineToBall;
     [SerializeField] private Transform _bounceLine;
     [SerializeField] private Transform _selection;
     [SerializeField] private Transform _collisionPosition;
+
+    [Header("Ball Tag")]
     [SerializeField] private string _ballTagName;
 
     public void ShowTrajectory(Vector2 origin, Vector2 direction, Quaternion cueAngle, float ballRadius) {

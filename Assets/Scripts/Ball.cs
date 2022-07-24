@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public enum BallState {
@@ -10,9 +8,11 @@ public enum BallState {
 public class Ball : MonoBehaviour {
     private Vector2 _directionOfMovement;
     private float _speedOfMovement;
-    private BallState _ballState;
     private CircleCollider2D _ballCollider;
     private float _radius;
+
+    private BallState _ballState;
+
     private Rigidbody2D _rigidbody;
 
 
@@ -86,6 +86,7 @@ public class Ball : MonoBehaviour {
     public void Setup(float speedOfMovement, Vector2 directionOfMovement) {
         _speedOfMovement = speedOfMovement;
         _directionOfMovement = directionOfMovement.normalized;
+
         Invoke(nameof(SetDynamic), Time.deltaTime);
     }
 

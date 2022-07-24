@@ -1,12 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class TouchArea : MonoBehaviour, IDragHandler {
+    [Header("")]
     [SerializeField] private Cue _cue;
+
+    [Header("")]
     [SerializeField] private TrajectoryRenderer _trajectoryRenderer;
+
+    [Header("")]
     [SerializeField] private StartSpeedSlider _startSpeedSlider;
+
     private Camera _mainCamera;
 
     private void Start() {
@@ -19,6 +23,7 @@ public class TouchArea : MonoBehaviour, IDragHandler {
         _startSpeedSlider.gameObject.SetActive(true);
         _trajectoryRenderer.gameObject.SetActive(true);
         _cue.gameObject.SetActive(true);
+
         _cue.transform.position = _cue.WhiteBall.transform.position;
         _trajectoryRenderer.transform.position = _cue.transform.position;
 

@@ -31,7 +31,7 @@ public class TouchArea : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     public void OnPointerUp(PointerEventData eventData) {
         if (_cue.WhiteBall.BallState == BallState.Dynamic) return;
 
-        //_cue.WhiteBall.Setup(_cue.ImpactForce, _cue.transform.up);
+        _cue.WhiteBall.Setup(_cue.ImpactForce, _cue.transform.up);
         _cue.gameObject.SetActive(false);
         //_trajectoryRenderer.gameObject.SetActive(false);
     }

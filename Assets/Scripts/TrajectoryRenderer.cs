@@ -10,13 +10,10 @@ public class TrajectoryRenderer : MonoBehaviour {
     [SerializeField] private Transform _collisionPosition;
     [SerializeField] private string _ballTagName;
 
-    [SerializeField] private Transform _temp;
-
     public void ShowTrajectory(Vector2 origin, Vector2 direction, Quaternion cueAngle, float ballRadius) {
-        RaycastHit2D hit = Physics2D.Raycast(origin + direction * ballRadius * 1.01f, direction, 50f);
-
         _collisionPosition.gameObject.SetActive(true);
 
+        RaycastHit2D hit = Physics2D.Raycast(origin + direction * ballRadius * 1.01f, direction, 50f);
         if (hit && hit.collider.tag != _ballTagName) {
             Vector2 offset = new Vector2(direction.y, -direction.x);
             hit = Physics2D.Raycast(origin + offset * ballRadius + direction * 0.01f, direction, 50f);
@@ -35,7 +32,6 @@ public class TrajectoryRenderer : MonoBehaviour {
         }
 
         if (!hit) return;
-
 
         DrawCollision(hit, origin, direction, cueAngle, ballRadius);
 
@@ -58,7 +54,6 @@ public class TrajectoryRenderer : MonoBehaviour {
         _bounceLine.position = _collisionPosition.position;
 
         Vector2 equilibriumPoint = (Vector2)hit.collider.transform.position - direction * (ballRadius + _collisionPosition.localScale.y);
-        _temp.position = equilibriumPoint;
 
         float zAngleBounceLine = zAngleLineToBall + ((equilibriumPoint.y > _collisionPosition.position.y) ? -90f : 90f);
         zAngleBounceLine += hit.collider.transform.position.x - origin.x > 0 ? 0f : 180f;

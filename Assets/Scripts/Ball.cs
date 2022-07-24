@@ -67,16 +67,27 @@ public class Ball : MonoBehaviour {
         if (otherBall) {
             Vector2 otherBallDirection = otherBall.transform.position - transform.position;
 
-            float speedKoeficient = Vector2.Angle(_directionOfMovement, otherBallDirection) / 90f;
-            Debug.Log(speedKoeficient);
+            float otherBallAngle = Mathf.Atan(Mathf.Abs(otherBallDirection.x / otherBallDirection.y)) * 180 / Mathf.PI;
+
+            if (transform.position.y < otherBallDirection.y) otherBallAngle = 180f - otherBallAngle;
+            if (transform.position.x > otherBallDirection.x) otherBallAngle *= -1f;
+
+            Vector2 equilibriumPoint = (Vector2)otherBall.transform.position - _directionOfMovement * _radius * 2f;
+
+            float ballAngle = otherBallAngle + ((equilibriumPoint.y > transform.position.y) ? -90f : 90f);
+            ballAngle += otherBall.transform.position.x - transform.position.x > 0 ? 0f : 180f;
+
+            float speedKoeficient = Mathf.Abs(otherBallAngle - ballAngle);
+            if (speedKoeficient > 180f) speedKoeficient -= 180f;
+            speedKoeficient = Mathf.Abs(speedKoeficient - 90f) / 90f;
+
             otherBall.Setup(_speedOfMovement * (1f - speedKoeficient), otherBallDirection);
             _speedOfMovement *= speedKoeficient;
 
-            _directionOfMovement = new Vector2(otherBallDirection.y, -otherBallDirection.x);
-            if (Physics2D.OverlapCircle((Vector2)transform.position + _directionOfMovement, _radius * 0.99f)) {
-                _directionOfMovement = new Vector2(-otherBallDirection.y, -otherBallDirection.x);
-            }
-
+            if (ballAngle > 180f)
+                _directionOfMovement = new Vector2(otherBallDirection.y, -otherBallDirection.x);
+            else
+                _directionOfMovement = new Vector2(-otherBallDirection.y, otherBallDirection.x);
         }
     }
 

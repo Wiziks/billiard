@@ -2,13 +2,13 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class TouchArea : MonoBehaviour, IDragHandler {
-    [Header("")]
+    [Header("Billiard Cue")]
     [SerializeField] private Cue _cue;
 
-    [Header("")]
+    [Header("Trajectory Renderer")]
     [SerializeField] private TrajectoryRenderer _trajectoryRenderer;
 
-    [Header("")]
+    [Header("Start Speed Slider")]
     [SerializeField] private StartSpeedSlider _startSpeedSlider;
 
     private Camera _mainCamera;

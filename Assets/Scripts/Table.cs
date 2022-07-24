@@ -8,6 +8,9 @@ public class Table : MonoBehaviour {
     [Header("Billiard Cue")]
     [SerializeField] private Cue _cue;
 
+    [Header("Game Manager")]
+    [SerializeField] private GameManager _gameManager;
+
     public static Table Instance;
 
     void Start() {
@@ -16,9 +19,10 @@ public class Table : MonoBehaviour {
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
-        if (other.gameObject != _cue.WhiteBall.gameObject)
+        if (other.gameObject != _cue.WhiteBall.gameObject) {
             Destroy(other.gameObject);
-        else {
+            _gameManager.UpdateBallNumber();
+        } else {
             _cue.WhiteBall.Setup(0f, Vector2.zero);
             _cue.WhiteBall.transform.position = Vector2.zero;
         }

@@ -1,13 +1,13 @@
 using UnityEngine;
 
 public class Cue : MonoBehaviour {
-    [Header("")]
+    [Header("Max Impact Force")]
     [SerializeField] private float _maxImpactForce;
 
-    [Header("")]
+    [Header("Trajectory Renderer")]
     [SerializeField] private TrajectoryRenderer _trajectoryRenderer;
 
-    [Header("")]
+    [Header("White Ball")]
     [SerializeField] private Ball _whiteBall;
 
     public void Hit(float fraction) {

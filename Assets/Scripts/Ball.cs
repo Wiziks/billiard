@@ -13,6 +13,7 @@ public class Ball : MonoBehaviour {
     private BallState _ballState;
     private CircleCollider2D _ballCollider;
     private float _radius;
+    private Rigidbody2D _rigidbody;
     private Collider2D _lastOverlapCollider;
 
 
@@ -20,11 +21,11 @@ public class Ball : MonoBehaviour {
         _ballState = BallState.Static;
         _ballCollider = GetComponent<CircleCollider2D>();
         _radius = transform.localScale.x * _ballCollider.radius;
+        _rigidbody = GetComponent<Rigidbody2D>();
     }
 
     private void Update() {
         if (_ballState == BallState.Static) return;
-
 
         _speedOfMovement -= Table.Instance.Friction * Time.deltaTime * 9.81f;
 
@@ -36,20 +37,12 @@ public class Ball : MonoBehaviour {
     void FixedUpdate() {
         if (_ballState == BallState.Static) return;
 
-        transform.Translate(_directionOfMovement * _speedOfMovement * Time.fixedDeltaTime);
-
-        Collider2D[] allColliders = Physics2D.OverlapCircleAll(transform.position, _radius);
-        foreach (Collider2D overlapCollider in allColliders) {
-            if (overlapCollider != _ballCollider) {
-                if (!_lastOverlapCollider || _lastOverlapCollider != overlapCollider)
-                    ReflectionCalculation(overlapCollider);
-                _lastOverlapCollider = overlapCollider;
-            }
-        }
-
+        _rigidbody.position += _directionOfMovement * _speedOfMovement * Time.fixedDeltaTime;
     }
 
     private void ReflectionCalculation(Collider2D collider) {
+        if (_ballState == BallState.Static) return;
+
         Table table = collider.GetComponent<Table>();
         if (table) {
             _speedOfMovement *= table.Bounce;
@@ -81,12 +74,24 @@ public class Ball : MonoBehaviour {
 
             otherBall.Setup(_speedOfMovement * (1f - speedKoeficient), otherBallDirection);
             _speedOfMovement *= speedKoeficient;
+
+            _rigidbody.position += _directionOfMovement * _speedOfMovement * Time.fixedDeltaTime;
+
+            Debug.Log(name + "\t" + speedKoeficient);
         }
+    }
+
+    private void OnCollisionEnter2D(Collision2D other) {
+        ReflectionCalculation(other.collider);
     }
 
     public void Setup(float speedOfMovement, Vector2 directionOfMovement) {
         _speedOfMovement = speedOfMovement;
         _directionOfMovement = directionOfMovement.normalized;
+        Invoke(nameof(SetDynamic), Time.deltaTime);
+    }
+
+    void SetDynamic() {
         _ballState = BallState.Dynamic;
     }
 

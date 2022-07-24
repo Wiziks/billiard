@@ -10,8 +10,6 @@ public class TrajectoryRenderer : MonoBehaviour {
     [SerializeField] private Transform _collisionPosition;
     [SerializeField] private string _ballTagName;
 
-    [SerializeField] private Transform temp;
-
     public void ShowTrajectory(Vector2 origin, Vector2 direction, Quaternion cueAngle, float ballRadius) {
         _collisionPosition.gameObject.SetActive(true);
 
@@ -56,7 +54,6 @@ public class TrajectoryRenderer : MonoBehaviour {
         _bounceLine.position = _collisionPosition.position;
 
         Vector2 equilibriumPoint = (Vector2)hit.collider.transform.position - direction * (ballRadius + _collisionPosition.localScale.y);
-        temp.position = equilibriumPoint;
 
         float zAngleBounceLine = zAngleLineToBall + ((equilibriumPoint.y > _collisionPosition.position.y) ? -90f : 90f);
         zAngleBounceLine += hit.collider.transform.position.x > origin.x ? 0f : 180f;

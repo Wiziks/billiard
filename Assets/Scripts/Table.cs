@@ -12,8 +12,8 @@ public class Table : MonoBehaviour {
             Instance = this;
     }
 
-    void Update() {
-
+    private void OnTriggerEnter2D(Collider2D other) {
+        Destroy(other.gameObject);
     }
 
     public float Bounce { get => _bounce; }

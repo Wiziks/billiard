@@ -14,7 +14,6 @@ public class Ball : MonoBehaviour {
     private CircleCollider2D _ballCollider;
     private float _radius;
     private Rigidbody2D _rigidbody;
-    private Collider2D _lastOverlapCollider;
 
 
     void Start() {
@@ -41,20 +40,28 @@ public class Ball : MonoBehaviour {
     }
 
     private void ReflectionCalculation(Collider2D collider) {
+
+    }
+
+    private void OnCollisionEnter2D(Collision2D other) {
         if (_ballState == BallState.Static) return;
 
-        Table table = collider.GetComponent<Table>();
+        Table table = other.collider.GetComponent<Table>();
         if (table) {
+            Debug.Log(1);
             _speedOfMovement *= table.Bounce;
 
             _directionOfMovement = new Vector2(_directionOfMovement.x, -_directionOfMovement.y);
             if (Physics2D.OverlapCircle((Vector2)transform.position + _directionOfMovement, _radius * 0.99f)) {
                 _directionOfMovement = new Vector2(-_directionOfMovement.x, -_directionOfMovement.y);
             }
+
+            _rigidbody.position += _directionOfMovement * _speedOfMovement * Time.fixedDeltaTime * 2f;
+
             return;
         }
 
-        Ball otherBall = collider.GetComponent<Ball>();
+        Ball otherBall = other.collider.GetComponent<Ball>();
         if (otherBall) {
             Vector2 otherBallDirection = otherBall.transform.position - transform.position;
 
@@ -76,13 +83,7 @@ public class Ball : MonoBehaviour {
             _speedOfMovement *= speedKoeficient;
 
             _rigidbody.position += _directionOfMovement * _speedOfMovement * Time.fixedDeltaTime;
-
-            Debug.Log(name + "\t" + speedKoeficient);
         }
-    }
-
-    private void OnCollisionEnter2D(Collision2D other) {
-        ReflectionCalculation(other.collider);
     }
 
     public void Setup(float speedOfMovement, Vector2 directionOfMovement) {

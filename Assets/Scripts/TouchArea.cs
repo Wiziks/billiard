@@ -12,18 +12,15 @@ public class TouchArea : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         _mainCamera = Camera.main;
     }
 
-    public void OnPointerDown(PointerEventData eventData) {
+    public void OnPointerDown(PointerEventData eventData) { }
+
+    public void OnDrag(PointerEventData eventData) {
         if (_cue.WhiteBall.BallState == BallState.Dynamic) return;
 
         _trajectoryRenderer.gameObject.SetActive(true);
         _cue.gameObject.SetActive(true);
         _cue.transform.position = _cue.WhiteBall.transform.position;
         _trajectoryRenderer.transform.position = _cue.transform.position;
-        SetupCue();
-    }
-
-    public void OnDrag(PointerEventData eventData) {
-        if (_cue.WhiteBall.BallState == BallState.Dynamic) return;
 
         SetupCue();
     }
@@ -33,7 +30,7 @@ public class TouchArea : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 
         _cue.WhiteBall.Setup(_cue.ImpactForce, _cue.transform.up);
         _cue.gameObject.SetActive(false);
-        //_trajectoryRenderer.gameObject.SetActive(false);
+        _trajectoryRenderer.gameObject.SetActive(false);
     }
 
     private void SetupCue() {

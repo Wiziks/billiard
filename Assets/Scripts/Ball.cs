@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-enum BallState {
+public enum BallState {
     Static,
     Dynamic
 }
@@ -43,7 +43,6 @@ public class Ball : MonoBehaviour {
             if (overlapCollider != _ballCollider) {
                 if (!_lastOverlapCollider || _lastOverlapCollider != overlapCollider)
                     ReflectionCalculation(overlapCollider);
-
                 _lastOverlapCollider = overlapCollider;
             }
         }
@@ -59,7 +58,6 @@ public class Ball : MonoBehaviour {
             if (Physics2D.OverlapCircle((Vector2)transform.position + _directionOfMovement, _radius * 0.99f)) {
                 _directionOfMovement = new Vector2(-_directionOfMovement.x, -_directionOfMovement.y);
             }
-
             return;
         }
 
@@ -72,22 +70,17 @@ public class Ball : MonoBehaviour {
             if (transform.position.y < otherBallDirection.y) otherBallAngle = 180f - otherBallAngle;
             if (transform.position.x > otherBallDirection.x) otherBallAngle *= -1f;
 
-            Vector2 equilibriumPoint = (Vector2)otherBall.transform.position - _directionOfMovement * _radius * 2f;
+            Vector2 oldDirection = _directionOfMovement;
+            _directionOfMovement = new Vector2(otherBallDirection.y, -otherBallDirection.x);
+            if (Vector2.Angle(_directionOfMovement, oldDirection) > 90f)
+                _directionOfMovement *= -1f;
 
-            float ballAngle = otherBallAngle + ((equilibriumPoint.y > transform.position.y) ? -90f : 90f);
-            ballAngle += otherBall.transform.position.x - transform.position.x > 0 ? 0f : 180f;
-
-            float speedKoeficient = Mathf.Abs(otherBallAngle - ballAngle);
-            if (speedKoeficient > 180f) speedKoeficient -= 180f;
+            float speedKoeficient = Vector2.Angle(oldDirection, _directionOfMovement);
+            while (speedKoeficient > 180f) speedKoeficient -= 180f;
             speedKoeficient = Mathf.Abs(speedKoeficient - 90f) / 90f;
 
             otherBall.Setup(_speedOfMovement * (1f - speedKoeficient), otherBallDirection);
             _speedOfMovement *= speedKoeficient;
-
-            if (ballAngle > 180f)
-                _directionOfMovement = new Vector2(otherBallDirection.y, -otherBallDirection.x);
-            else
-                _directionOfMovement = new Vector2(-otherBallDirection.y, otherBallDirection.x);
         }
     }
 
@@ -98,5 +91,5 @@ public class Ball : MonoBehaviour {
     }
 
     public float Radius { get => _radius; }
-    internal BallState BallState { get => _ballState; }
+    public BallState BallState { get => _ballState; }
 }

@@ -62,11 +62,6 @@ public class Ball : MonoBehaviour {
 
             Vector2 otherBallDirection = otherBall.transform.position - transform.position;
 
-            float otherBallAngle = Mathf.Atan(Mathf.Abs(otherBallDirection.x / otherBallDirection.y)) * 180 / Mathf.PI;
-
-            if (transform.position.y < otherBallDirection.y) otherBallAngle = 180f - otherBallAngle;
-            if (transform.position.x > otherBallDirection.x) otherBallAngle *= -1f;
-
             Vector2 oldDirection = _directionOfMovement;
             _directionOfMovement = new Vector2(otherBallDirection.y, -otherBallDirection.x);
             if (Vector2.Angle(_directionOfMovement, oldDirection) > 90f)

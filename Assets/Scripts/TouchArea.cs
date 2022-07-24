@@ -3,34 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class TouchArea : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler {
+public class TouchArea : MonoBehaviour, IDragHandler {
     [SerializeField] private Cue _cue;
     [SerializeField] private TrajectoryRenderer _trajectoryRenderer;
+    [SerializeField] private StartSpeedSlider _startSpeedSlider;
     private Camera _mainCamera;
 
     private void Start() {
         _mainCamera = Camera.main;
     }
 
-    public void OnPointerDown(PointerEventData eventData) { }
-
     public void OnDrag(PointerEventData eventData) {
         if (_cue.WhiteBall.BallState == BallState.Dynamic) return;
 
+        _startSpeedSlider.gameObject.SetActive(true);
         _trajectoryRenderer.gameObject.SetActive(true);
         _cue.gameObject.SetActive(true);
         _cue.transform.position = _cue.WhiteBall.transform.position;
         _trajectoryRenderer.transform.position = _cue.transform.position;
 
         SetupCue();
-    }
-
-    public void OnPointerUp(PointerEventData eventData) {
-        if (_cue.WhiteBall.BallState == BallState.Dynamic) return;
-
-        _cue.WhiteBall.Setup(_cue.ImpactForce, _cue.transform.up);
-        _cue.gameObject.SetActive(false);
-        _trajectoryRenderer.gameObject.SetActive(false);
     }
 
     private void SetupCue() {

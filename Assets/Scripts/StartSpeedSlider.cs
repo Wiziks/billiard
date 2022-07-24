@@ -11,6 +11,7 @@ public class StartSpeedSlider : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     [SerializeField] private Image _background;
     private float _startYImagePosition;
     private float _maxYImagePosition;
+    private float _fraction;
 
     private void Start() {
         _startYImagePosition = _cueImage.anchoredPosition.y;
@@ -23,10 +24,14 @@ public class StartSpeedSlider : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     public void OnDrag(PointerEventData eventData) {
         float y = Mathf.Clamp(Input.mousePosition.y - 290f, _maxYImagePosition, _startYImagePosition);
         _cueImage.anchoredPosition = new Vector2(_cueImage.anchoredPosition.x, y);
+        _fraction = 1f - y / _startYImagePosition;
         _background.color = _speedIndicator.Evaluate(1f - y / _startYImagePosition);
     }
 
     public void OnPointerUp(PointerEventData eventData) {
-
+        _cue.Hit(_fraction);
+        _cueImage.anchoredPosition = new Vector2(_cueImage.anchoredPosition.x, _startYImagePosition);
+        _background.color = _speedIndicator.Evaluate(0);
+        gameObject.SetActive(false);
     }
 }

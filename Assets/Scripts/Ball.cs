@@ -39,30 +39,27 @@ public class Ball : MonoBehaviour {
         _rigidbody.position += _directionOfMovement * _speedOfMovement * Time.fixedDeltaTime;
     }
 
-    private void ReflectionCalculation(Collider2D collider) {
-
-    }
-
     private void OnCollisionEnter2D(Collision2D other) {
         if (_ballState == BallState.Static) return;
 
         Table table = other.collider.GetComponent<Table>();
         if (table) {
-            Debug.Log(1);
             _speedOfMovement *= table.Bounce;
 
             _directionOfMovement = new Vector2(_directionOfMovement.x, -_directionOfMovement.y);
-            if (Physics2D.OverlapCircle((Vector2)transform.position + _directionOfMovement, _radius * 0.99f)) {
-                _directionOfMovement = new Vector2(-_directionOfMovement.x, -_directionOfMovement.y);
+            Collider2D[] allColliders = Physics2D.OverlapCircleAll((Vector2)transform.position + _directionOfMovement, _radius * 0.99f);
+            foreach (Collider2D overlapCollider in allColliders) {
+                if (overlapCollider != _ballCollider && overlapCollider == other.collider)
+                    _directionOfMovement = new Vector2(-_directionOfMovement.x, -_directionOfMovement.y);
             }
-
-            _rigidbody.position += _directionOfMovement * _speedOfMovement * Time.fixedDeltaTime * 2f;
 
             return;
         }
 
         Ball otherBall = other.collider.GetComponent<Ball>();
         if (otherBall) {
+            if (otherBall.SpeedOfMovement > _speedOfMovement) return;
+
             Vector2 otherBallDirection = otherBall.transform.position - transform.position;
 
             float otherBallAngle = Mathf.Atan(Mathf.Abs(otherBallDirection.x / otherBallDirection.y)) * 180 / Mathf.PI;
@@ -92,10 +89,11 @@ public class Ball : MonoBehaviour {
         Invoke(nameof(SetDynamic), Time.deltaTime);
     }
 
-    void SetDynamic() {
+    private void SetDynamic() {
         _ballState = BallState.Dynamic;
     }
 
     public float Radius { get => _radius; }
     public BallState BallState { get => _ballState; }
+    public float SpeedOfMovement { get => _speedOfMovement; }
 }

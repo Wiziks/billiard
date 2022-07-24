@@ -252,7 +252,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10acaad20c2048d4ab4d0bbc54247c53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _impactForce: 20
+  _trajectoryRenderer: {fileID: 1778920018}
+  _maxImpactForce: 25
   _whiteBall: {fileID: 1252357093}
 --- !u!1 &281787768
 GameObject:
@@ -830,7 +831,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &818374462
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1174,6 +1175,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cue: {fileID: 255142370}
   _trajectoryRenderer: {fileID: 1778920018}
+  _startSpeedSlider: {fileID: 818374466}
 --- !u!1 &1070058431
 GameObject:
   m_ObjectHideFlags: 0
@@ -2301,6 +2303,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _bounce: 0.75
   _friction: 0.1
+  _cue: {fileID: 255142370}
 --- !u!1 &1457819147
 GameObject:
   m_ObjectHideFlags: 0

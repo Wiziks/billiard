@@ -10,32 +10,32 @@ public class TrajectoryRenderer : MonoBehaviour {
     [SerializeField] private Transform _collisionPosition;
     [SerializeField] private string _ballTagName;
 
-    public void ShowTrajectory(Vector2 origin, Vector2 direction, Quaternion cueAngle, float ballRadius) {
-        RaycastHit2D hit = Physics2D.Raycast(origin + direction * ballRadius, direction, 50f);
+    [SerializeField] private Transform _temp;
 
-        if (!hit) return;
+    public void ShowTrajectory(Vector2 origin, Vector2 direction, Quaternion cueAngle, float ballRadius) {
+        RaycastHit2D hit = Physics2D.Raycast(origin + direction * ballRadius * 1.01f, direction, 50f);
 
         _collisionPosition.gameObject.SetActive(true);
 
-        if (hit.collider.tag != _ballTagName) {
+        if (hit && hit.collider.tag != _ballTagName) {
             Vector2 offset = new Vector2(direction.y, -direction.x);
-            hit = Physics2D.Raycast(origin + offset * ballRadius, direction, 50f);
-            Debug.DrawRay(origin + offset * ballRadius, direction * 50f, Color.red);
-            if (!hit.collider || hit.collider.tag != _ballTagName) {
-                hit = Physics2D.Raycast(origin - offset * ballRadius, direction, 50f);
-                Debug.DrawRay(origin - offset * ballRadius, direction * 50f, Color.red);
-                if (!hit.collider || hit.collider.tag != _ballTagName) {
+            hit = Physics2D.Raycast(origin + offset * ballRadius + direction * 0.01f, direction, 50f);
+            if (hit && hit.collider.tag != _ballTagName) {
+                hit = Physics2D.Raycast(origin - offset * ballRadius + direction * 0.01f, direction, 50f);
+                if (hit && hit.collider.tag != _ballTagName) {
                     _selection.gameObject.SetActive(false);
                     _lineToBall.gameObject.SetActive(false);
                     _bounceLine.gameObject.SetActive(false);
 
                     hit = Physics2D.Raycast(origin + direction * ballRadius * 1.01f, direction, 50f);
                     DrawCollision(hit, origin, direction, cueAngle, ballRadius);
-
                     return;
                 }
             }
         }
+
+        if (!hit) return;
+
 
         DrawCollision(hit, origin, direction, cueAngle, ballRadius);
 
@@ -57,23 +57,16 @@ public class TrajectoryRenderer : MonoBehaviour {
 
         _bounceLine.position = _collisionPosition.position;
 
-        float zAngleBounceLine = zAngleLineToBall + (zAngleLineToBall - cueAngle.eulerAngles.z < -180 ? 90f : -90f);
+        Vector2 equilibriumPoint = (Vector2)hit.collider.transform.position - direction * (ballRadius + _collisionPosition.localScale.y);
+        _temp.position = equilibriumPoint;
+
+        float zAngleBounceLine = zAngleLineToBall + ((equilibriumPoint.y > _collisionPosition.position.y) ? -90f : 90f);
+        zAngleBounceLine += hit.collider.transform.position.x - origin.x > 0 ? 0f : 180f;
         _bounceLine.rotation = Quaternion.Euler(0, 0, zAngleBounceLine);
 
-        float leftKoef = zAngleLineToBall;
-        if (leftKoef < 0f)
-            leftKoef += 180f;
-        else if (leftKoef > 180f)
-            leftKoef -= 180f;
-
-        float rightKoef = cueAngle.eulerAngles.z;
-        if (rightKoef < 0f)
-            rightKoef += 180f;
-        else if (rightKoef > 180f)
-            rightKoef -= 180f;
-
-
-        float yBounceLineScale = Mathf.Abs(leftKoef - rightKoef) / 90f;
+        float yBounceLineScale = Mathf.Abs(cueAngle.eulerAngles.z - zAngleBounceLine);
+        if (yBounceLineScale > 180f) yBounceLineScale -= 180f;
+        yBounceLineScale = Mathf.Abs(yBounceLineScale - 90f) / 90f;
         _bounceLine.localScale = new Vector3(_bounceLine.localScale.x, yBounceLineScale, _bounceLine.localScale.z);
         _lineToBall.localScale = new Vector3(_lineToBall.localScale.x, 1f - yBounceLineScale, _lineToBall.localScale.z);
     }
